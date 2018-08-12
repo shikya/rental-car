@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Rental Car Calculator</title>
+    <meta name="og:title" content="Drivezy Calculator"/>
+    <meta name="og:type" content="webpage"/>
+    <meta name="og:site_name" content="Rental Calculator"/>
+    <meta name="og:description" content="Instantly Calculate Rental Car Pricing"/>
+    <script>
+        let table = document.getElementById('table')
+        class RateColumn {
+            constructor(kmhr, rshr){
+                this.kmhr= kmhr;
+                this.rshr= rshr;
+            }
+        }
+        let rateColumns = [
+            new RateColumn(5, 65), new RateColumn(10, 100), new RateColumn(15, 140), new RateColumn(0, 60)
+        ]
+        let tableHead = `<tr>
+                        <th>Rate</th>
+                        <th>Min Hours</th>
+                        <th>Extra Charges</th>
+                        <th>Discount</th>
+                        <th>Fuel(liter)</th>
+                        <th>Fuel(rs)</th>
+                        <th>Final Price</th>
+                    </tr>`;
+        class Transaction {
+            constructor(distance, kmpl, kmhr, rshr, fprc){
+                this.distance = distance;
+                this.kmpl = kmpl;
+                this.kmhr = kmhr;
+                this.rshr = rshr;
+                this.fprc = fprc;
+
+                // Minimum Hours
+                if(this.kmhr == 0)
+                    this.minhr = 24
+                else
+                    this.minhr = this.distance / this.kmhr;
+
+                // Price
+                this.price = this.minhr * this.rshr;
+
+                // Extra
+                this.extra = 0
+                if(this.kmhr == 0)
+                    this.extra = this.distance * 1.5;
+
+                // Discount
+                this.discount = 0;
+                if(this.minhr >=24 )
+                    this.discount = (this.price/100) * 20;
+
+                // Fuel Ltr
+                this.fltr = 0;
+                if(this.kmhr ==0)
+                    this.fltr = this.distance/this.kmpl;
+
+                // Fuel Price
+                this.frs =0;
+                if(this.kmhr == 0)
+                    this.frs = this.fltr*this.fprc;
+
+                // Total Pricce
+                this.total = this.price + this.extra - this.discount + this.frs;
+            }
+            toRender(){
+                return `<tr class="transaction">
+                            <td>${this.kmhr}</td>
+                            <td>${this.minhr}</td>
+                            <td>${this.extra}</td>
+                            <td>${this.discount}</td>
+                            <td>${this.fltr}</td>
+                            <td>${this.frs}</td>
+                            <td>${this.total}</td>
+                        </tr>`;
+            }
+        }
+
+        function reloadAll() {
+            let distance = parseInt(document.getElementById('distance').value);
+            let kmpl = parseInt(document.getElementById('milage').value);
+            let fuelPrice = parseInt(document.getElementById('fuel').value);
+
+            let render = "";
+            rateColumns.forEach(rateColumn => {
+                render = render + new Transaction(distance, kmpl, rateColumn.kmhr, rateColumn.rshr, fuelPrice).toRender();
+            });
+            let table = document.getElementById('table');
+            table.innerHTML = tableHead + render;
+        }
+    </script>
+</head>
+<body>
+    <table>
+        <tr>
+            <td>Enter Distance </td>
+            <td><input type="text" name="Distance" id="distance" placeholder="130" value="130" onchange="reloadAll()">km</td>
+        </tr>
+        <tr>
+            <td>Enter Car milage </td>
+            <td><input type="text" name="milage" id="milage" placeholder="20" value="20" onchange="reloadAll()">kmpl</td>
+        </tr>
+        <tr>
+            <td>Enter Fuel Price </td>
+            <td><input type="text" name="Fuel" id="fuel" placeholder="70" value="70" onchange="reloadAll()">rs</td>
+        </tr>
+    </table>
+    <br>
+    <table border="0" id='table'>
+    </table>
+    <script>
+        reloadAll();
+    </script>
+</body>
+</html>
