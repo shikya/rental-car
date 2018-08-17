@@ -9,6 +9,7 @@
     <meta name="og:type" content="webpage"/>
     <meta name="og:site_name" content="Rental Calculator"/>
     <meta name="og:description" content="Instantly Calculate Rental Car Pricing"/>
+    <link rel="stylesheet" type="text/css" href="css/app.css">
     <script>
         let table = document.getElementById('table')
         class RateColumn {
@@ -20,15 +21,17 @@
         let rateColumns = [
             new RateColumn(5, 65), new RateColumn(10, 100), new RateColumn(15, 140), new RateColumn(0, 60)
         ]
-        let tableHead = `<tr>
-                        <th>Rate</th>
-                        <th>Min Hours</th>
-                        <th>Extra Charges</th>
-                        <th>Discount</th>
-                        <th>Fuel(liter)</th>
-                        <th>Fuel(rs)</th>
-                        <th>Final Price</th>
-                    </tr>`;
+        let tableHead = `<thead>
+                            <tr>
+                                <th>Rate</th>
+                                <th>Min. Hours</th>
+                                <th>Extra Charges</th>
+                                <th>Discount</th>
+                                <th>Fuel (ltr)</th>
+                                <th>Fuel (INR)</th>
+                                <th>Final Price</th>
+                            </tr>
+                        </thead>`;
         class Transaction {
             constructor(distance, kmpl, kmhr, rshr, fprc){
                 this.distance = distance;
@@ -92,28 +95,47 @@
                 render = render + new Transaction(distance, kmpl, rateColumn.kmhr, rateColumn.rshr, fuelPrice).toRender();
             });
             let table = document.getElementById('table');
-            table.innerHTML = tableHead + render;
+            table.innerHTML = tableHead + '<tbody>' + render + '</tbody>';
         }
     </script>
 </head>
 <body>
-    <table>
-        <tr>
-            <td>Enter Distance </td>
-            <td><input type="text" name="Distance" id="distance" placeholder="130" value="130" onchange="reloadAll()">km</td>
-        </tr>
-        <tr>
-            <td>Enter Car milage </td>
-            <td><input type="text" name="milage" id="milage" placeholder="20" value="20" onchange="reloadAll()">kmpl</td>
-        </tr>
-        <tr>
-            <td>Enter Fuel Price </td>
-            <td><input type="text" name="Fuel" id="fuel" placeholder="70" value="70" onchange="reloadAll()">rs</td>
-        </tr>
-    </table>
-    <br>
-    <table border="0" id='table'>
-    </table>
+    <h1 class="heading">Car Rental Calculator</h1>
+    <div class="wrapper">
+        <div class="card form">
+            <h2 class="title">Fill Details</h2>
+            <div class="form-wrapper">
+              <form method="post">
+                <div class="form-group">
+                    <label for="distance">Distance to be travel</label>
+                    <input id="distance" type="text" placeholder="Ex. 100" name="distance" required="" value="300" min="0" onchange="reloadAll()">
+                    <span class="unit">/km</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="milage">Car Milage</label>
+                    <input id="milage" type="text" placeholder="Ex. 18" name="milage" required="" value="20" min="0" onchange="reloadAll()">
+                    <span class="unit">/ltr</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="fuel">Fuel Price [INR]</label>
+                    <input id="fuel" type="text" placeholder="Eg. 70" name="fuel" required="" value="80" min="0" onchange="reloadAll()">
+                    <span class="unit">/ltr</span>
+                </div>
+              </form>
+            </div>
+        </div>
+
+        <div class="card result-content">
+            <h2 class="title">Calculations</h2>
+            <div class="results">
+                <table border="0" id='table'>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <script>
         reloadAll();
     </script>
